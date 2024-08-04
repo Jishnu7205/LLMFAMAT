@@ -63,7 +63,7 @@ export default function Sidebar() {
                 </div>
 
                 <div>
-                    <IconButton onClick={() => navigate("./new-chat")}>
+                    <IconButton onClick={() => navigate("./chat")}>
                         New Prompt&nbsp;&nbsp;
                         <AddCircleIcon />
                     </IconButton>

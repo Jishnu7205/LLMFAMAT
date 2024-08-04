@@ -15,8 +15,9 @@ function PromptTitleInput() {
     const handleButtonClick = async () => {
         try{
             const response = await axios.post(`http://localhost:8080/AMS/${user}/chat`, {title});
+            
             if(response.status === 201){
-                navigate(`./${title}`); // Adjust the route if necessary
+                navigate(`./${response.data.promptId}`); // Adjust the route if necessary
             }
             else{
                 console.error('Failed to send the request.');

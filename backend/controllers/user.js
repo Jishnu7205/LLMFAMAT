@@ -166,6 +166,8 @@ const queryController = expressAsyncHandler(async (req, res) => {
 
 const displayQueryController = expressAsyncHandler(async (req, res) => {
   try {
+    console.log(req.params);
+    
       const { user, titleId } = req.params;
 
       // Fetch the prompt and populate the conversation
