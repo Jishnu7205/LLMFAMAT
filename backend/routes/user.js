@@ -7,7 +7,6 @@ Router.route("/", (req, res) => res.send("root"))
 Router.route("/login")
     .post(loginController);
 
-
 Router.route("/signup")
     .get((req, res) => res.send("signup"))
     .post(signupController);

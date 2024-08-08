@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// PromptArea.js
+import React, { useState, useEffect, useContext } from 'react';
 import { IconButton } from "@mui/material";
 import "./styles.css";
 import CloseIcon from '@mui/icons-material/Close';
@@ -7,12 +8,15 @@ import AnswerReceived from "./AnswerReceived";
 import QuestionAsked from "./QuestionAsked";
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from "axios";
+import { ThemeContext } from './ThemeContext';
 
 export default function PromptArea() {
+    const { lightTheme } = useContext(ThemeContext);
     const item = "CArbon";
     const { user, titleId } = useParams();
     const [conversation, setConversation] = useState([]); // Changed to hold conversation objects
     const [currentQuestion, setCurrentQuestion] = useState('');
+    const [title, setTitle] = useState('');
 
     // Fetch all conversations on component mount
     useEffect(() => {
@@ -20,6 +24,7 @@ export default function PromptArea() {
             try {
                 const response = await axios.get(`http://localhost:8080/AMS/${user}/chat/${titleId}`);
                 const initialConversation = response.data.conversation || [];
+                setTitle(response.data.title);
                 setConversation(initialConversation);
             } catch (error) {
                 console.error('Error fetching conversations:', error);
@@ -54,18 +59,18 @@ export default function PromptArea() {
 
     const navigate = useNavigate();
     return (
-        <div className="promptarea-container">
-            <div className="promptarea-title">
-                <p className="history-icon">{item[0]}</p>
-                <div className="title-text">
-                    {item}
+        <div className={`promptarea-container`}>
+            <div className={`promptarea-title ${lightTheme ? '' : 'dark'}`}>
+                <p className={`history-icon`}>{title[0]}</p>
+                <div className={`title-text ${lightTheme ? '' : 'dark'}`}>
+                    {title}
                 </div>
                 <IconButton onClick={() => { navigate("../welcome") }}>
                     <CloseIcon />
                 </IconButton>
             </div>
 
-            <div className="promptarea-questions">
+            <div className={`promptarea-questions ${lightTheme ? '' : 'dark'}`}>
                 {conversation.map((item, index) => (
                     <div key={index}>
                         <QuestionAsked message={item.question} />
@@ -74,10 +79,10 @@ export default function PromptArea() {
                 ))}
             </div>
 
-            <div className="promptarea-input">
+            <div className={`promptarea-input ${lightTheme ? '' : 'dark'}`}>
                 <input
                     placeholder="Enter your question here . . . "
-                    className="promptarea-questionarea"
+                    className={`promptarea-questionarea ${lightTheme ? '' : 'dark'}`}
                     value={currentQuestion}
                     onChange={(e) => setCurrentQuestion(e.target.value)}
                 />

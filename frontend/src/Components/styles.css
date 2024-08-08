@@ -1,5 +1,5 @@
 .dark{
-    background-color: #7f9fb5 !important;
+    background-color: #416882 !important;
     color: whitesmoke !important;
 }
 .icon{
@@ -138,6 +138,8 @@
     outline-width: 0;
     border: none;
     font-size: 1.5rem;
+    border-radius: 1.25rem;
+    padding: 0.5rem;
 }
 
 .sb-history{
@@ -334,7 +336,9 @@
     border-radius: 1.25rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
+.msgBox{
+    background-color: rgb(117, 117, 24) !important;
+}
 
 
 

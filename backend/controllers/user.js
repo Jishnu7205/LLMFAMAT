@@ -3,6 +3,8 @@ const User = require("../models/user");
 const Prompt = require("../models/prompt")
 const expressAsyncHandler = require("express-async-handler");
 const generateToken = require("../utils/generateToken");
+const path = require('path')
+const { HfInference } = require("@huggingface/inference");
 
 const loginController = expressAsyncHandler(async (req, res) => {
     console.log(req.body);
@@ -131,37 +133,73 @@ const chatController = expressAsyncHandler(async(req, res) => {
   }
 })
 
+const inference = new HfInference("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");
+async function query(question) {
+  let responseContent = '';
+
+  for await (const chunk of inference.chatCompletionStream({
+      model: "google/gemma-2b-it",
+      messages: [{ role: "user", content: question }],
+      max_tokens: 100,
+  })) {
+      responseContent += chunk.choices[0]?.delta?.content || "";
+  }
+
+  return responseContent.replaceAll("*", "");
+}
+// async function query(data) {
+// 	const response = await fetch(
+// 		"https://api-inference.huggingface.co/models/google/gemma-2b",
+// 		{
+// 			headers: {
+// 				Authorization: "Bearer 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",
+// 				"Content-Type": "application/json",
+// 			},
+// 			method: "POST",
+// 			body: JSON.stringify(data),
+// 		}
+// 	);
+// 	const result = await response.json();
+// 	return result;
+// }
+
+
 
 const queryController = expressAsyncHandler(async (req, res) => {
   try {
-
       const { user, titleId } = req.params;
       const { question } = req.body;
 
+      // Call the query function with the question
+      const queryResponse = await query(question);
+      console.log("Query Response:", queryResponse);
+
+      // Use the response directly as the answer
+      const answer = queryResponse || "No answer generated";
+      
       // Update the prompt in the database
       const updatedPrompt = await Prompt.findOneAndUpdate(
           { _id: titleId },
           {
-              $push: { conversation: { question: question, answer: `This is a sample response for: ${question}` } } // Add new question-answer pair to conversation
+              $push: { conversation: { question: question, answer: answer } }
           },
-          { new: true, runValidators: true } // Return the updated document and run validators
+          { new: true, runValidators: true }
       );
 
-      console.log(updatedPrompt);
-      
       if (!updatedPrompt) {
           return res.status(404).send("Prompt not found");
       }
 
       // Respond with the updated conversation
       res.status(200).json({
-          conversation: updatedPrompt.conversation // Return the updated conversation
+          conversation: updatedPrompt.conversation
       });
   } catch (err) {
       console.error(err);
       res.status(500).send("Server error");
   }
 });
+
 
 
 const displayQueryController = expressAsyncHandler(async (req, res) => {
@@ -176,9 +214,9 @@ const displayQueryController = expressAsyncHandler(async (req, res) => {
       if (!prompt) {
           return res.status(404).send("Prompt not found");
       }
-
+      
       // Send the conversation in the response
-      res.status(200).json({ conversation: prompt.conversation });
+      res.status(200).json({ conversation: prompt.conversation, title: prompt.title });
   } catch (err) {
       console.error(err);
       res.status(500).send("Server error");

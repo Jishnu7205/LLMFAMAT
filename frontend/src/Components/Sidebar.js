@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// Sidebar.js
+import React, { useEffect, useState, useContext } from "react";
 import { IconButton } from "@mui/material";
 import "./styles.css";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -9,10 +10,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import HistoryItem from "./HistoryItem";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ThemeContext } from './ThemeContext';
 
 export default function Sidebar() {
+    const { lightTheme, setLightTheme } = useContext(ThemeContext);
     const [userData, setUserData] = useState(null);
-    const [lightTheme, setLightTheme] = useState(true);
     const [history, setHistory] = useState([]);
     const navigate = useNavigate();
 
@@ -74,15 +76,15 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            <div className="sb-search">
+            <div className={"sb-search" + (lightTheme ? "" : " dark")}>
                 <IconButton>
                     <SearchIcon />
                 </IconButton>
                 &nbsp;&nbsp;&nbsp;&nbsp;
-                <input placeholder="Search" className="sb-searchbox" />
+                <input placeholder="Search" className={"sb-searchbox"  + (lightTheme ? "" : " dark")}/>
             </div>
 
-            <div className="sb-history">
+            <div className={"sb-history" + (lightTheme ? "" : " dark")}>
                 {history.map((item) => (
                     <HistoryItem historyItem={item} key={item.title} />
                 ))}
